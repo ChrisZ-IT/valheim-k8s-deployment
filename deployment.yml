@@ -20,10 +20,10 @@ spec:
     spec:
       nodeSelector:
         requiredCPU: high
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+      # securityContext:
+      #   runAsUser: 1000
+      #   runAsGroup: 1000
+      #   fsGroup: 1000
       volumes:
         - name: valheim-gamefiles-volume
           persistentVolumeClaim:
@@ -39,23 +39,25 @@ spec:
       - name: init-steamcmd
         image: docker.io/steamcmd/steamcmd:ubuntu
         imagePullPolicy: IfNotPresent
-        command: ['sh', '-c', 'steamcmd +force_install_dir /data +login anonymous +app_update 896660 +quit']
+        command: ['sh', '-c', 'steamcmd +force_install_dir /home/ubuntu/valheim +login anonymous +app_update 896660 +quit && chown ubuntu:ubuntu -R /home/ubuntu/ && chmod 755 -R /home/ubuntu/valheim']
         securityContext:
-          allowPrivilegeEscalation: false
-          runAsUser: 1000
-          runAsGroup: 1000
+          allowPrivilegeEscalation: true
+          # runAsUser: 1000
+          # runAsGroup: 1000
         volumeMounts:
         - name: valheim-gamefiles-volume
-          mountPath: /data
+          mountPath: /home/ubuntu/valheim
       containers:
       - name: valheim-server
         image: docker.io/chriszit/base-game-server-image:1.0.0
         imagePullPolicy: IfNotPresent
         securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-              - ALL
+          allowPrivilegeEscalation: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          # capabilities:
+          #   drop:
+          #     - ALL
         resources:
           limits:
             cpu: "3"
@@ -91,12 +93,12 @@ spec:
             secretKeyRef:
               name: valheim-server-password
               key: password
-        command: ['sh', '-c', 'apt update && apt install -y curl libatomic1 libpulse-dev && cd /data; /data/start_server.sh _DOLLAR_SERVER_NAME _DOLLAR_WORLD_NAME _DOLLAR_DIFFICULTY _DOLLAR_JOIN_PASSWORD']
+        command: ['sh', '-c', 'cd /home/ubuntu/valheim && /home/ubuntu/valheim/start_server.sh _DOLLAR_SERVER_NAME _DOLLAR_WORLD_NAME _DOLLAR_DIFFICULTY _DOLLAR_JOIN_PASSWORD']
         volumeMounts:
         - name: valheim-gamefiles-volume
-          mountPath: /data
+          mountPath: /home/ubuntu/valheim
         - name: valheim-saves-volume
           mountPath: /home/ubuntu/.config
         - name: valheim-game-configs
-          mountPath: /data/start_server.sh
+          mountPath: /home/ubuntu/valheim/start_server.sh
           subPath: start_server.sh

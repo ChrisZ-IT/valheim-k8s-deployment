@@ -18,7 +18,7 @@
             # Check if files actually exist to avoid running on empty globs
             [ -e "$file" ] || continue
             echo "Applying $file..."
-            envsubst < "$file" | sed 's/_DOLLAR_/\$/g' #| kubectl apply -f -
+            envsubst < "$file" | sed 's/_DOLLAR_/\$/g' | kubectl apply -f -
           done
         ```
   5. Verify pod starts:
