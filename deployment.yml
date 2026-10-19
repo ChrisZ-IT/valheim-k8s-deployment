@@ -1,0 +1,102 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: valheim
+  name: valheim
+  namespace: valheim
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valheim
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: valheim
+    spec:
+      nodeSelector:
+        requiredCPU: high
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      volumes:
+        - name: valheim-gamefiles-volume
+          persistentVolumeClaim:
+            claimName: valheim-gamefiles-pvc
+        - name: valheim-saves-volume
+          persistentVolumeClaim:
+            claimName: valheim-saves-pvc
+        - name: valheim-game-configs
+          configMap:
+            name: valheim-game-configs
+            defaultMode: 0755
+      initContainers:
+      - name: init-steamcmd
+        image: docker.io/steamcmd/steamcmd:ubuntu
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', 'steamcmd +force_install_dir /data +login anonymous +app_update 896660 +quit']
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 1000
+          runAsGroup: 1000
+        volumeMounts:
+        - name: valheim-gamefiles-volume
+          mountPath: /data
+      containers:
+      - name: valheim-server
+        image: docker.io/chriszit/base-game-server-image:1.0.0
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        resources:
+          limits:
+            cpu: "3"
+            memory: "8Gi"
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+        ports:
+        - containerPort: 2456
+          name: 2456-udp
+          protocol: UDP
+        - containerPort: 2457
+          name: 2457-udp
+          protocol: UDP
+        env:
+        - name: SERVER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: valheim-game-configs
+              key: servername
+        - name: WORLD_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: valheim-game-configs
+              key: world_name
+        - name: DIFFICULTY
+          valueFrom:
+            configMapKeyRef:
+              name: valheim-game-configs
+              key: difficulty
+        - name: JOIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: valheim-server-password
+              key: password
+        command: ['sh', '-c', 'apt update && apt install -y curl libatomic1 libpulse-dev && cd /data; /data/start_server.sh _DOLLAR_SERVER_NAME _DOLLAR_WORLD_NAME _DOLLAR_DIFFICULTY _DOLLAR_JOIN_PASSWORD']
+        volumeMounts:
+        - name: valheim-gamefiles-volume
+          mountPath: /data
+        - name: valheim-saves-volume
+          mountPath: /home/ubuntu/.config
+        - name: valheim-game-configs
+          mountPath: /data/start_server.sh
+          subPath: start_server.sh

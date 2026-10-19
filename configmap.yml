@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: valheim-game-configs
+  namespace: valheim
+data:
+  servername: ${SERVER_NAME}
+  world_name: ${WORLD_NAME}
+  difficulty: normal # values are: casual, easy, normal, hard, hardcore, immersive, hammer.
+
+  start_server.sh: |
+      #!/usr/bin/env bash
+      export templdpath=_DOLLAR_LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=./linux64:_DOLLAR_LD_LIBRARY_PATH
+      export SteamAppId=892970
+
+      echo "Starting server PRESS CTRL-C to exit"
+
+      # Note the positional parameters can use it too if they are getting wiped out:
+      ./valheim_server.x86_64 -name "_DOLLAR_1" -port 2456 -world "_DOLLAR_2" -preset "_DOLLAR_3" -password "_DOLLAR_4" -crossplay
+
+      export LD_LIBRARY_PATH=_DOLLAR_templdpath
