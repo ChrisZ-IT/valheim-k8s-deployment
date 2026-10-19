@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valheim-svc
+  namespace: valheim
+spec:
+  type: LoadBalancer
+  selector:
+    app: valheim
+  externalTrafficPolicy: Local
+  ports:
+  - name: 2456-udp
+    port: 2456
+    protocol: UDP
+    targetPort: 2456
+  - name: 2457-udp
+    port: 2457
+    protocol: UDP
+    targetPort: 2457
