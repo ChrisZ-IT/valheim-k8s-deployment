@@ -8,14 +8,26 @@
   4. Deploy the server resources:
     - this block assumes you have `envsubst` installed.
         ```
-          read -p "Enter Server name: " servername
-          read -p "Enter World name: " worldname
-          read -sp "Enter desired password : " svr_password
+          read -p "Enter Server name(My Server): " servername
+          servername=${servername:-My Server}
+          read -p "Enter World name(${servername}): " worldname
+          read -sp "Enter required server password(secret): " svr_password
+          svr_password=${svr_password:-secret}
+          echo ""
+
           export SERVER_NAME=$servername
-          export WORLD_NAME=$worldname
+          if [[ -z "$worldname" ]]; then
+            export WORLD_NAME="$servername"
+          else
+            export WORLD_NAME="$worldname"
+          fi
           export SERVER_PASSWORD=$(echo -n $svr_password | base64)
+
+          if [ -f "namespace.yml" ]; then
+            echo "Applying namespace.yml..."
+            kubectl apply -f namespace.yml
+          fi
           for file in *.yml; do
-            # Check if files actually exist to avoid running on empty globs
             [ -e "$file" ] || continue
             echo "Applying $file..."
             envsubst < "$file" | sed 's/_DOLLAR_/\$/g' | kubectl apply -f -
@@ -37,6 +49,8 @@
         Please note that adding a person on the permitted list will ban everyone else from the server.
       ```
 
+Note: To patch server just restart the pod.
+
 ## Troubleshooting
   - Verify the pod:
     - `k get pod -n valheim`
@@ -55,3 +69,9 @@
 
   - Verify the service has an endpoint
     - `k describe svc -n valheim valheim-svc`
+
+## TO DO
+  - Get this working as a non root user :puke:
+  - Setup network policies
+  - Maybe capture the access .txt configs in the config map.
+    Still not 100% on this since it would require a pod restart to apply it.

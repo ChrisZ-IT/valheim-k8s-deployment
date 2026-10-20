@@ -18,6 +18,6 @@ data:
       echo "Starting server PRESS CTRL-C to exit"
 
       # Note the positional parameters can use it too if they are getting wiped out:
-      ./valheim_server.x86_64 -name "_DOLLAR_1" -port 2456 -world "_DOLLAR_2" -preset "_DOLLAR_3" -password "_DOLLAR_4" -crossplay
+      ./valheim_server.x86_64 -name "_DOLLAR_1" -port 2456 -world "_DOLLAR_2" -preset "_DOLLAR_3" -crossplay -password "_DOLLAR_4"
 
       export LD_LIBRARY_PATH=_DOLLAR_templdpath
