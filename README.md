@@ -50,14 +50,15 @@
   7. (optional) Add yourself and your friends to the adminlist.txt/permittedlist.txt (and your enemies to bannedlist.txt)
     - If you used nfs or some other persistent storage you can navigate to where you have it saving the data for the `valheim-saves-pv` mount.
 
-    [Taken from](https://valheim.com/support/a-guide-to-dedicated-servers/) under `Administrating the server`:
-      ```
-        You can edit three separate text-files to set 1) who has admin privileges, 2) who is banned from your server, and 3) who is permitted on your server.
+[Taken from](https://valheim.com/support/a-guide-to-dedicated-servers/) under `Administrating the server` :
 
-        These three files, located in the default save path, are called adminlist.txt, bannedlist.txt, and permittedlist.txt. Add one Platform User ID per line to set desired roles. The Platform User ID can be obtained from the Server log or from within the game using the F2 panel and follows the format [Platform]_[User ID] (case sensitive).
+```
+You can edit three separate text-files to set 1) who has admin privileges, 2) who is banned from your server, and 3) who is permitted on your server.
 
-        Please note that adding a person on the permitted list will ban everyone else from the server.
-      ```
+These three files, located in the default save path, are called adminlist.txt, bannedlist.txt, and permittedlist.txt. Add one Platform User ID per line to set desired roles. The Platform User ID can be obtained from the Server log or from within the game using the F2 panel and follows the format [Platform]_[User ID] (case sensitive).
+
+Please note that adding a person on the permitted list will ban everyone else from the server.
+```
 
 Note: To patch server just restart the pod.
 

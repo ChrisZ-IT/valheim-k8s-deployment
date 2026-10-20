@@ -1,0 +1,59 @@
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: valheim-svc-account
+  namespace: valheim
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: valheim-role
+  namespace: valheim
+rules:
+  - apiGroups: ["apps", "extensions"]
+    resources: ["deployments"]
+    resourceNames: ["valheim"]
+    verbs: ["get", "patch", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: deployment-restart
+  namespace: valheim
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: valheim-role
+subjects:
+  - kind: ServiceAccount
+    name: valheim-svc-account
+    namespace: valheim
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: valheim-deployment-restart
+  namespace: valheim
+spec:
+  schedule: '0 4 * * *' # Restart server at 4am
+  timeZone: America/Denver
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: valheim-svc-account
+          restartPolicy: Never
+          containers:
+            - name: valheim-restart
+              image: bitnami/kubectl
+              imagePullPolicy: IfNotPresent
+              command:
+                - 'kubectl'
+                - 'rollout'
+                - 'restart'
+                - 'deployment/valheim'
