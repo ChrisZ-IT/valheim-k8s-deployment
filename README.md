@@ -7,12 +7,16 @@
   3. Make any necessary changes (examples: change configmap, pv and pvcs..etc )
   4. Deploy the server resources:
     - this block assumes you have `envsubst` installed.
+      note 1: Not setting a password prevents your server from showing up in the server browser(people will need your IP/join code).
+      note 2: Passwords are required for public servers. This deployment current defaults to a public server if you set a password.
+      note 3: `-crossplay` is also enabled by default(Registers your server with PlayFab, this enables crossplay (steam, epic and consoles) & generates a join code). Remove that line from the config map if only want to allow steam users to be able to join.
+      note 4: You will need to manually add `-public 0 -password $4` to your config map if you don't want a public server and you want a password. Im not really accounting for that in the deploy script below. Just noting it is a possible config and I might add it later.
         ```
           read -p "Enter Server name(My Server): " servername
           servername=${servername:-My Server}
           read -p "Enter World name(${servername}): " worldname
-          read -sp "Enter required server password(secret): " svr_password
-          svr_password=${svr_password:-secret}
+          read -sp "Enter server password(none): " svr_password
+          svr_password=${svr_password:-none}
           echo ""
 
           export SERVER_NAME=$servername
@@ -30,7 +34,13 @@
           for file in *.yml; do
             [ -e "$file" ] || continue
             echo "Applying $file..."
-            envsubst < "$file" | sed 's/_DOLLAR_/\$/g' | kubectl apply -f -
+            if [[ "$file" == "configmap.yml" && "$svr_password" == "none" ]]; then
+              envsubst < "$file" | \
+              sed -E 's/-password\s+"[^"]+"/-public 0/g' | \
+              sed 's/_DOLLAR_/\$/g' | kubectl apply -f -
+            else
+              envsubst < "$file" | sed 's/_DOLLAR_/\$/g' | kubectl apply -f -
+            fi
           done
         ```
   5. Verify pod starts:
@@ -75,3 +85,4 @@ Note: To patch server just restart the pod.
   - Setup network policies
   - Maybe capture the access .txt configs in the config map.
     Still not 100% on this since it would require a pod restart to apply it.
+  - cronjob to restart the pod once a week to patch.
