@@ -7,10 +7,10 @@
   3. Make any necessary changes (examples: change configmap, pv and pvcs..etc )
   4. Deploy the server resources:
     - this block assumes you have `envsubst` installed.
-      note 1: Not setting a password prevents your server from showing up in the server browser(people will need your IP/join code).
-      note 2: Passwords are required for public servers. This deployment current defaults to a public server if you set a password.
-      note 3: `-crossplay` is also enabled by default(Registers your server with PlayFab, this enables crossplay (steam, epic and consoles) & generates a join code). Remove that line from the config map if only want to allow steam users to be able to join.
-      note 4: You will need to manually add `-public 0 -password $4` to your config map if you don't want a public server and you want a password. Im not really accounting for that in the deploy script below. Just noting it is a possible config and I might add it later.
+      - note 1: Not setting a password prevents your server from showing up in the server browser(people will need your IP/join code).
+      - note 2: Passwords are required for public servers. This deployment current defaults to a public server if you set a password.
+      - note 3: `-crossplay` is also enabled by default(Registers your server with PlayFab, this enables crossplay (steam, epic and consoles) & generates a join code). Remove that line from the config map if only want to allow steam users to be able to join.
+      - note 4: You will need to manually add `-public 0 -password $4` to your config map if you don't want a public server and you want a password. Im not really accounting for that in the deploy script below. Just noting it is a possible config and I might add it later.
         ```
           read -p "Enter Server name(My Server): " servername
           servername=${servername:-My Server}
