@@ -3,6 +3,8 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: nfs-storage
+  annotations:
+    kubectl.kubernetes.io/delete-policy: "Prevent"
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: Immediate
 ---
