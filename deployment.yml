@@ -20,6 +20,9 @@ spec:
     spec:
       nodeSelector:
         requiredCPU: high
+      securityContext:
+        fsGroup: 100
+        fsGroupChangePolicy: "OnRootMismatch"
       volumes:
         - name: valheim-gamefiles-volume
           persistentVolumeClaim:
@@ -35,7 +38,7 @@ spec:
       - name: init-steamcmd
         image: docker.io/steamcmd/steamcmd:ubuntu
         imagePullPolicy: IfNotPresent
-        command: ['sh', '-c', 'steamcmd +force_install_dir /data +login anonymous +app_update 896660 +quit']
+        command: ['sh', '-c', 'steamcmd +force_install_dir /data +login anonymous +app_update 896660 validate +quit && chown -R 1026:100 /data && chmod -R 775 /data']
         securityContext:
           allowPrivilegeEscalation: true
         volumeMounts:
@@ -43,8 +46,11 @@ spec:
           mountPath: /data
       containers:
       - name: valheim-server
-        image: docker.io/ubuntu:26.04
+        image: docker.io/chriszit/valheim-server-base:1.0.0
         imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsUser: 1026
+          runAsGroup: 100
         resources:
           limits:
             cpu: "3"
@@ -84,14 +90,7 @@ spec:
           - 'sh'
           - '-c'
           - |
-            apt-get update && \
-            apt-get -y upgrade && \
-            apt-get install -y \
-              curl \
-              libatomic1 \
-              libpulse-dev \
-              libpulse0 && \
-            cd /data && \
+            chmod 766 -R ~/.config
             /data/start_server.sh \
               _DOLLAR_SERVER_NAME \
               _DOLLAR_WORLD_NAME \
@@ -101,7 +100,7 @@ spec:
         - name: valheim-gamefiles-volume
           mountPath: /data
         - name: valheim-saves-volume
-          mountPath: /root/.config
+          mountPath: /home/serviceuser/.config
         - name: valheim-game-configs
           mountPath: /data/start_server.sh
           subPath: start_server.sh

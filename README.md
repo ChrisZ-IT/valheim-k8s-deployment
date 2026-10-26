@@ -1,4 +1,8 @@
 # Valheim kubernetes deployment dedicated server
+A project for deploying a Valheim server into a kubernestes cluster.
+
+Note:
+  - I am using an NFS share off my synology for storing game files & Saves. Because of this my base container is using the uid & gid of my non admin account just so I don't have to modify any permissions. This makes it easy to be able to quickly edit the Admin/Permitted/banned.txt files with out doing any code changes or pod restarts.
 
 ## deployment
 
@@ -82,8 +86,6 @@ Note: To patch server just restart the pod.
     - `k describe svc -n valheim valheim-svc`
 
 ## TO DO
-  - Get this working as a non root user :puke:
   - Setup network policies
   - Maybe capture the access .txt configs in the config map.
     Still not 100% on this since it would require a pod restart to apply it.
-  - cronjob to restart the pod once a week to patch.
