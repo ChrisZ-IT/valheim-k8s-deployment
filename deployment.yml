@@ -37,7 +37,7 @@ spec:
       initContainers:
       - name: init-steamcmd
         image: docker.io/steamcmd/steamcmd:ubuntu
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command: ['sh', '-c', 'steamcmd +force_install_dir /data +login anonymous +app_update 896660 validate +quit && chown -R 1026:100 /data && chmod -R 775 /data']
         securityContext:
           allowPrivilegeEscalation: true
@@ -47,7 +47,7 @@ spec:
       containers:
       - name: valheim-server
         image: docker.io/chriszit/valheim-server-base:1.0.0
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         securityContext:
           runAsUser: 1026
           runAsGroup: 100
