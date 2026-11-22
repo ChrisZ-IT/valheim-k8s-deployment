@@ -3,5 +3,3 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: valheim
-  annotations:
-    kubectl.kubernetes.io/delete-policy: "Prevent"
