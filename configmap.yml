@@ -21,3 +21,13 @@ data:
       ./valheim_server.x86_64 -name "_DOLLAR_1" -port 2456 -world "_DOLLAR_2" -preset "_DOLLAR_3" -crossplay -password "_DOLLAR_4"
 
       export LD_LIBRARY_PATH=_DOLLAR_templdpath
+
+  adminlist.txt: |
+    // List admin players ID  ONE per line
+    ${ADMIN_LIST}
+
+  permittedlist.txt: |
+    // List permitted players ID ONE per line
+
+  bannedlist.txt: |
+    // List banned players ID  ONE per line

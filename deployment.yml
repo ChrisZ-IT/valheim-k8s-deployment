@@ -104,3 +104,12 @@ spec:
         - name: valheim-game-configs
           mountPath: /data/start_server.sh
           subPath: start_server.sh
+        - name: valheim-game-configs
+          mountPath: /home/serviceuser/.config/unity3d/IronGate/Valheim/adminlist.txt
+          subPath: adminlist.txt
+        - name: valheim-game-configs
+          mountPath: /home/serviceuser/.config/unity3d/IronGate/Valheim/permittedlist.txt
+          subPath: permittedlist.txt
+        - name: valheim-game-configs
+          mountPath: /home/serviceuser/.config/unity3d/IronGate/Valheim/bannedlist.txt
+          subPath: bannedlist.txt
