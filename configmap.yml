@@ -26,8 +26,8 @@ data:
     // List admin players ID  ONE per line
     ${ADMIN_LIST}
 
-  permittedlist.txt: |
-    // List permitted players ID ONE per line
+  # permittedlist.txt: |
+  #   // List permitted players ID ONE per line
 
-  bannedlist.txt: |
-    // List banned players ID  ONE per line
+  # bannedlist.txt: |
+  #   // List banned players ID  ONE per line
