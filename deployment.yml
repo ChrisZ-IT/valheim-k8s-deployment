@@ -47,7 +47,7 @@ spec:
       containers:
       - name: valheim-server
         image: docker.io/chriszit/valheim-server-base:1.0.1
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         workingDir: /home/serviceuser/valheim-server
         securityContext:
           runAsUser: 1026
